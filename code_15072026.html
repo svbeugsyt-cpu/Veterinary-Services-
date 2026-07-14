@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pet Care & Veterinary Services Management System</title>
+    <style>
+        *{box-sizing:border-box; font-family:'Segoe UI', Arial, sans-serif; margin:0; padding:0;}
+        body{background-color:#e8eff7; padding:18px; min-height:100vh;}
+        .screen{display:none; background:#ffffff; border-radius:8px; padding:22px; max-width:1250px; margin:0 auto; box-shadow:0 2px 12px rgba(0,0,0,0.08);}
+        .screen.active{display:block;}
+
+        /* LOGIN PAGE */
+        #login{max-width:440px; text-align:center; margin:90px auto; border-top:4px solid #2563eb;}
+        .login-header{margin-bottom:35px;}
+        .logo-icon{font-size:52px; color:#2563eb; margin-bottom:8px;}
+        .system-title{font-size:19px; font-weight:600; color:#1e293b; line-height:1.5;}
+        .form-group{margin-bottom:16px; text-align:left;}
+        .form-group label{display:block; margin-bottom:6px; font-weight:500; color:#334155;}
+        .form-group input, .form-group select, .form-group textarea{width:100%; padding:10px 12px; border:1px solid #cbd5e1; border-radius:5px; font-size:14px; transition:0.2s;}
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus{outline:none; border-color:#2563eb; box-shadow:0 0 0 3px rgba(37,99,235,0.1);}
+        .btn-group{margin-top:24px; display:flex; gap:8px; flex-wrap:wrap;}
+        button{padding:9px 16px; cursor:pointer; border:none; border-radius:5px; font-weight:500; font-size:13.5px; transition:all 0.2s ease;}
+        button:hover{transform:translateY(-1px); box-shadow:0 3px 8px rgba(0,0,0,0.12);}
+        .btn-login{background:#2563eb; color:#ffffff;}
+        .btn-login:hover{background:#1d4ed8;}
+        .btn-exit{background:#64748b; color:#ffffff;}
+        .btn-exit:hover{background:#475569;}
+        .btn-save, .btn-add, .btn-update{background:#16a34a; color:#ffffff;}
+        .btn-save:hover, .btn-add:hover, .btn-update:hover{background:#15803d;}
+        .btn-cancel, .btn-back{background:#6b7280; color:#ffffff;}
+        .btn-cancel:hover, .btn-back:hover{background:#4b5563;}
+        .btn-clear{background:#f59e0b; color:#ffffff;}
+        .btn-clear:hover{background:#d97706;}
+        .btn-view, .btn-edit{padding:5px 10px; font-size:13px;}
+        .btn-view{background:#3b82f6; color:#ffffff;}
+        .btn-view:hover{background:#2563eb;}
+        .btn-edit{background:#f97316; color:#ffffff;}
+        .btn-edit:hover{background:#ea580c;}
+        .btn-delete{background:#ef4444; color:#fff; padding:5px 10px; font-size:13px;}
+        .btn-delete:hover{background:#dc2626;}
+        .btn-generate{background:#8b5cf6; color:#fff;}
+        .btn-generate:hover{background:#7c3aed;}
+        .btn-export{background:#0891b2; color:#fff;}
+        .btn-export:hover{background:#0e7490;}
+
+        /* MAIN LAYOUT & SIDEBAR */
+        .dashboard-wrap{display:flex; gap:18px; min-height:540px;}
+        .sidebar{width:185px; background:#f8fafc; border-radius:6px; padding:16px 10px; border:1px solid #e2e8f0;}
+        .sidebar button{width:100%; margin-bottom:7px; text-align:left; background:transparent; color:#334155; padding:10px 12px; border-radius:5px; font-weight:normal; box-shadow:none;}
+        .sidebar button:hover{background:#e2e8f0; transform:none;}
+        .sidebar button.active{background:#dbeafe; color:#1d4ed8; font-weight:600; border-left:3px solid #2563eb;}
+        .sidebar .logout-btn{margin-top:35px; color:#dc2626; border-top:1px solid #e2e8f0; padding-top:12px;}
+        .sidebar .logout-btn:hover{background:#fee2e2;}
+        .main-content{flex:1;}
+        .top-bar{display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; flex-wrap:wrap; gap:12px; padding-bottom:12px; border-bottom:1px solid #e2e8f0;}
+        .top-bar h2{color:#1e293b; font-size:22px; font-weight:600;}
+        .search-area{display:flex; gap:6px; align-items:center; flex-wrap:wrap;}
+        .search-box{padding:9px 12px; width:220px; border:1px solid #cbd5e1; border-radius:5px;}
+        .filter-group{display:flex; gap:8px; align-items:center;}
+        .filter-group select, .filter-group input{padding:7px; border:1px solid #cbd5e1; border-radius:4px;}
+        .stats-grid{display:grid; grid-template-columns:repeat(auto-fit, minmax(170px,1fr)); gap:15px; margin-bottom:25px;}
+        .stat-card{background:linear-gradient(145deg,#ffffff,#f1f5f9); border:1px solid #e2e8f0; padding:18px 12px; text-align:center; border-radius:6px; box-shadow:0 1px 4px rgba(0,0,0,0.05);}
+        .stat-card h3{font-size:32px; margin-bottom:5px; color:#1e40af; font-weight:700;}
+        .stat-card p{color:#475569; font-weight:500; font-size:14px;}
+        h3{color:#1e293b; margin-bottom:12px; font-size:18px; font-weight:600;}
+        table{width:100%; border-collapse:separate; border-spacing:0; margin:18px 0; border-radius:6px; overflow:hidden; border:1px solid #e2e8f0;}
+        th, td{padding:11px 10px; text-align:left; font-size:13.5px;}
+        th{background:#f1f5f9; font-weight:600; color:#334155; border-bottom:2px solid #cbd5e1;}
+        td{border-bottom:1px solid #f1f5f9; color:#475569;}
+        tr:last-child td{border-bottom:none;}
+        tr:hover td{background:#f8fafc;}
+        .action-btns{display:flex; gap:4px;}
+        .btn-add{margin:12px 0; float:right;}
+        .clearfix{clear:both; height:1px;}
+        .form-row{display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px;}
+        .full-width{grid-column:1/-1;}
+        .search-result-box{border:1px solid #e2e8f0; padding:20px; margin:18px 0; line-height:1.9; border-radius:6px; background:#f8fafc;}
+        .search-result-box strong{color:#1e293b; display:inline-block; width:130px;}
+        .report-result{margin-top:15px; padding:15px; background:#f8fafc; border-radius:6px; border:1px solid #e2e8f0;}
+        .hidden{display:none;}
+    </style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login" class="screen active">
+    <div class="login-header">
+        <div class="logo-icon">🐾</div>
+        <div class="system-title">Pet Care & Veterinary Services Management System</div>
+    </div>
+    <div class="form-group">
+        <label>Username</label>
+        <input type="text" id="user" placeholder="Enter your username">
+    </div>
+    <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="pass" placeholder="Enter your password">
+    </div>
+    <div class="btn-group">
+        <button class="btn-login" onclick="login()">Login</button>
+        <button class="btn-exit" onclick="window.close()">Exit</button>
+    </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboard" class="screen">
+    <div class="dashboard-wrap">
+        <div class="sidebar">
+            <button class="active" onclick="showScreen('dashboard'); setActive(this)">Dashboard</button>
+            <button onclick="showScreen('petRecords'); setActive(this)">Pet Records</button>
+            <button onclick="showScreen('appointments'); setActive(this)">Appointments</button>
+            <button onclick="showScreen('services'); setActive(this)">Services</button>
+            <button onclick="showScreen('reports'); setActive(this)">Reports</button>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+        <div class="main-content">
+            <div class="top-bar">
+                <h2>Dashboard - Overview</h2>
+                <div class="search-area">
+                    <input type="text" class="search-box" id="searchInput" placeholder="Search Owner or Pet...">
+                    <button onclick="searchRecord()">Search</button>
+                </div>
+            </div>
+            <div class="stats-grid">
+                <div class="stat-card"><h3>120</h3><p>Total Pets</p></div>
+                <div class="stat-card"><h3>18</h3><p>Appointments Today</p></div>
+                <div class="stat-card"><h3>7</h3><p>Pending Services</p></div>
+                <div class="stat-card"><h3>45</h3><p>Completed Services</p></div>
+            </div>
+            <h3>Recent Pet Records</h3>
+            <table id="recordsTable">
+                <thead><tr><th>Owner Name</th><th>Pet Name</th><th>Type</th><th>Service</th><th>Date</th><th>Status</th><th>Action</th></tr></thead>
+                <tbody></tbody>
+            </table>
+            <button class="btn-add" onclick="showScreen('addRecord')">Add New Record</button>
+            <div class="clearfix"></div>
+        </div>
+    </div>
+</div>
+
+<!-- PET RECORDS -->
+<div id="petRecords" class="screen">
+    <div class="dashboard-wrap">
+        <div class="sidebar">
+            <button onclick="showScreen('dashboard'); setActive(this)">Dashboard</button>
+            <button class="active" onclick="showScreen('petRecords'); setActive(this)">Pet Records</button>
+            <button onclick="showScreen('appointments'); setActive(this)">Appointments</button>
+            <button onclick="showScreen('services'); setActive(this)">Services</button>
+            <button onclick="showScreen('reports'); setActive(this)">Reports</button>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+        <div class="main-content">
+            <div class="top-bar">
+                <h2>Pet Records Management</h2>
+                <div class="search-area">
+                    <input type="text" class="search-box" id="petSearch" placeholder="Search pet/owner..." onkeyup="filterPetRecords()">
+                </div>
+            </div>
+            <table id="petTable">
+                <thead><tr><th>Owner Name</th><th>Pet Name</th><th>Type</th><th>Breed</th><th>Age</th><th>Contact</th><th>Action</th></tr></thead>
+                <tbody>
+                    <tr><td>Juan Dela Cruz</td><td>Max</td><td>Dog</td><td>Golden Retriever</td><td>2 Years</td><td>09123456789</td><td class="action-btns"><button class="btn-edit">Edit</button><button class="btn-delete">Delete</button></td></tr>
+                    <tr><td>Maria Santos</td><td>Mimi</td><td>Cat</td><td>Persian</td><td>1 Year</td><td>09171234567</td><td class="action-btns"><button class="btn-edit">Edit</button><button class="btn-delete">Delete</button></td></tr>
+                </tbody>
+            </table>
+            <button class="btn-add" onclick="showScreen('addRecord')">Register New Pet</button>
+            <div class="clearfix"></div>
+        </div>
+    </div>
+</div>
+
+<!-- APPOINTMENTS -->
+<div id="appointments" class="screen">
+    <div class="dashboard-wrap">
+        <div class="sidebar">
+            <button onclick="showScreen('dashboard'); setActive(this)">Dashboard</button>
+            <button onclick="showScreen('petRecords'); setActive(this)">Pet Records</button>
+            <button class="active" onclick="showScreen('appointments'); setActive(this)">Appointments</button>
+            <button onclick="showScreen('services'); setActive(this)">Services</button>
+            <button onclick="showScreen('reports'); setActive(this)">Reports</button>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+        <div class="main-content">
+            <div class="top-bar">
+                <h2>Appointment List</h2>
+                <div class="search-area">
+                    <input type="text" class="search-box" id="apptSearch" placeholder="Search pet/service..." onkeyup="filterAppointments()">
+                </div>
+            </div>
+            <table id="apptTable">
+                <thead><tr><th>Pet Name</th><th>Service</th><th>Date</th><th>Time</th><th>Status</th><th>Action</th></tr></thead>
+                <tbody>
+                    <tr><td>Max</td><td>General Checkup</td><td>2026-07-14</td><td>09:00 AM</td><td>Confirmed</td><td class="action-btns"><button class="btn-edit">Reschedule</button><button class="btn-delete">Cancel</button></td></tr>
+                    <tr><td>Mimi</td><td>Vaccination</td><td>2026-07-15</td><td>10:30 AM</td><td>Pending</td><td class="action-btns"><button class="btn-edit">Reschedule</button><button class="btn-delete">Cancel</button></td></tr>
+                    <tr><td>Bingo</td><td>Grooming</td><td>2026-07-16</td><td>02:00 PM</td><td>Reserved</td><td class="action-btns"><button class="btn-edit">Reschedule</button><button class="btn-delete">Cancel</button></td></tr>
+                </tbody>
+            </table>
+            <button class="btn-add">Schedule New Appointment</button>
+        </div>
+    </div>
+</div>
+
+<!-- SERVICES PAGE - MAY ADD/EDIT/DELETE/SEARCH -->
+<div id="services" class="screen">
+    <div class="dashboard-wrap">
+        <div class="sidebar">
+            <button onclick="showScreen('dashboard'); setActive(this)">Dashboard</button>
+            <button onclick="showScreen('petRecords'); setActive(this)">Pet Records</button>
+            <button onclick="showScreen('appointments'); setActive(this)">Appointments</button>
+            <button class="active" onclick="showScreen('services'); setActive(this)">Services</button>
+            <button onclick="showScreen('reports'); setActive(this)">Reports</button>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+        <div class="main-content">
+            <div class="top-bar">
+                <h2>Available Services</h2>
+                <div class="search-area">
+                    <input type="text" class="search-box" id="serviceSearch" placeholder="Search service name..." onkeyup="filterServices()">
+                    <button class="btn-add" style="float:none; margin:0;" onclick="showScreen('addServiceForm')">Add New</button>
+                </div>
+            </div>
+            <table id="serviceTable">
+                <thead><tr><th>Service Name</th><th>Description</th><th>Price</th><th>Action</th></tr></thead>
+                <tbody id="serviceListBody"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- ADD/EDIT SERVICE FORM -->
+<div id="addServiceForm" class="screen">
+    <h2 id="serviceFormTitle">Add New Service</h2>
+    <input type="hidden" id="editServiceIndex">
+    <div class="form-group"><label>Service Name</label><input type="text" id="serviceName" placeholder="e.g. Nail Trim"></div>
+    <div class="form-group"><label>Description</label><textarea id="serviceDesc" rows="2" placeholder="Short details about this service"></textarea></div>
+    <div class="form-group"><label>Price (₱)</label><input type="number" id="servicePrice" placeholder="0.00" step="0.01"></div>
+    <div class="btn-group">
+        <button class="btn-save" onclick="saveService()">Save</button>
+        <button class="btn-cancel" onclick="showScreen('services')">Cancel</button>
+    </div>
+</div>
+
+<!-- REPORTS PAGE - MAY SEARCH/FILTER/GENERATE -->
+<div id="reports" class="screen">
+    <div class="dashboard-wrap">
+        <div class="sidebar">
+            <button onclick="showScreen('dashboard'); setActive(this)">Dashboard</button>
+            <button onclick="showScreen('petRecords'); setActive(this)">Pet Records</button>
+            <button onclick="showScreen('appointments'); setActive(this)">Appointments</button>
+            <button onclick="showScreen('services'); setActive(this)">Services</button>
+            <button class="active" onclick="showScreen('reports'); setActive(this)">Reports</button>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+        <div class="main-content">
+            <div class="top-bar">
+                <h2>Reports & Summary</h2>
+                <div class="filter-group">
+                    <input type="date" id="dateFrom">
+                    <input type="date" id="dateTo">
+                    <button class="btn-generate" onclick="generateReport()">Generate</button>
+                    <button class="btn-export" onclick="alert('Report ready to save!')">Export</button>
+                </div>
+            </div>
+            <div class="search-area" style="margin-bottom:15px;">
+                <input type="text" class="search-box" id="reportSearch" placeholder="Search records in report...">
+            </div>
+            <div style="display:grid; gap:8px; margin-bottom:15px;">
+                <button style="text-align:left; background:#f1f5f9; color:#1e293b;" onclick="showReportType('daily')">Daily Transactions</button>
+                <button style="text-align:left; background:#f1f5f9; color:#1e293b;" onclick="showReportType('monthly')">Monthly Services Summary</button>
+                <button style="text-align:left; background:#f1f5f9; color:#1e293b;" onclick="showReportType('history')">Appointment History</button>
+                <button style="text-align:left; background:#f1f5f9; color:#1e293b;" onclick="showReportType('revenue')">Revenue Report</button>
+            </div>
+            <div id="reportOutput" class="report-result hidden">
+                <h4 id="reportTitle"></h4>
+                <div id="reportContent"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ADD RECORD -->
+<div id="addRecord" class="screen">
+    <h2>Add New Pet Record</h2>
+    <div class="form-row">
+        <div class="form-group"><label>Owner Name</label><input type="text" id="addOwner"></div>
+        <div class="form-group"><label>Gender</label><select id="addGender"><option>Male</option><option>Female</option></select></div>
+    </div>
+    <div class="form-row">
+        <div class="form-group"><label>Contact Number</label><input type="text" id="addContact"></div>
+        <div class="form-group"><label>Age</label><input type="text" id="addAge"></div>
+    </div>
+    <div class="form-row">
+        <div class="form-group"><label>Pet Name</label><input type="text" id="addPetName"></div>
+        <div class="form-group"><label>Service</label><select id="addServiceSelect"><option>Checkup</option><option>Vaccine</option><option>Grooming</option><option>Deworming</option></select></div>
+    </div>
+    <div class="form-row">
+        <div class="form-group"><label>Pet Type</label><select id="addType"><option>Dog</option><option>Cat</option><option>Bird</option><option>Others</option></select></div>
+        <div class="form-group"><label>Appointment Date</label><input type="date" id="addDate"></div>
+    </div>
+    <div class="form-row">
+        <div class="form-group"><label>Breed</label><input type="text" id="addBreed"></div>
+        <div class="form-group"><label>Remarks</label><textarea id="addNotes" rows="3"></textarea></div>
+    </div>
+    <div class="btn-group">
+        <button class="btn-save" onclick="saveRecord()">Save</button>
+        <button class="btn-clear" onclick="clearAddForm()">Clear</button>
+        <button class="btn-cancel" onclick="showScreen('dashboard')">Cancel</button>
+    </div>
+</div>
+
+<!-- UPDATE RECORD -->
+<div id="updateRecord" class="screen">
+    <h2>Update Record</h2>
+    <input type="hidden" id="editIndex">
+    <div class="form-group"><label>Pet Name</label><input type="text" id="editPetName" readonly></div>
+    <div class="form-group"><label>Current Status</label><input type="text" id="currentStatus" readonly></div>
+    <div class="form-group"><label>New Status</label><select id="newStatus"><option>Pending</option><option>In Progress</option><option>Completed</option><option>Cancelled</option></select></div>
+    <div class="form-group"><label>Appointment Date</label><input type="date" id="editDate"></div>
+    <div class="form-group"><label>Remarks</label><textarea id="editNotes" rows="3"></textarea></div>
+    <div class="btn-group">
+        <button class="btn-update" onclick="applyUpdate()">Update</button>
+        <button class="btn-cancel" onclick="showScreen('dashboard')">Cancel</button>
+    </div>
+</div>
+
+<!-- SEARCH RESULT -->
+<div id="searchResult" class="screen">
+    <h2>Search Result</h2>
+    <div class="form-group">
+        <label>Search Keyword</label>
+        <input type="text" id="resultSearch" placeholder="Enter owner or pet name">
+        <button onclick="searchRecord()">Find</button>
+    </div>
+    <div class="search-result-box" id="resultBox"></div>
+    <div class="btn-group">
+        <button class="btn-view" onclick="alert('Record details displayed')">View</button>
+        <button class="btn-back" onclick="showScreen('dashboard')">Back</button>
+    </div>
+</div>
+
+<script>
+let records = [
+    {owner:'Juan Dela Cruz', pet:'Max', type:'Dog', service:'Checkup', date:'2026-07-14', status:'Pending'},
+    {owner:'Maria Santos', pet:'Mimi', type:'Cat', service:'Vaccine', date:'2026-07-15', status:'Done'},
+    {owner:'Ana Reyes', pet:'Bingo', type:'Dog', service:'Grooming', date:'2026-07-16', status:'Pending'}
+];
+
+let serviceList = [
+    {name:'General Checkup', desc:'Physical exam and consultation', price:350},
+    {name:'Vaccination', desc:'Anti‑rabies and core vaccines', price:450},
+    {name:'Deworming', desc:'Oral or injectable treatment', price:200},
+    {name:'Basic Grooming', desc:'Bath, nail trim, ear clean', price:300},
+    {name:'Advanced Grooming', desc:'Full service including haircut', price:500}
+];
+
+window.onload = () => {
+    refreshTable();
+    renderServices();
+};
+
+function setActive(btn){
+    document.querySelectorAll('.sidebar button').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+}
+function showScreen(id){
+    document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+}
+function login(){
+    if(document.getElementById('user').value.trim() && document.getElementById('pass').value.trim()){ showScreen('dashboard'); }
+    else{ alert('Please enter username and password.'); }
+}
+function logout(){ showScreen('login'); document.getElementById('user').value=''; document.getElementById('pass').value=''; }
+
+// --- SERVICES FUNCTIONS ---
+function renderServices(){
+    let tbody = document.getElementById('serviceListBody');
+    tbody.innerHTML='';
+    serviceList.forEach((s,i)=>{
+        tbody.innerHTML += `<tr>
+            <td>${s.name}</td>
+            <td>${s.desc}</td>
+            <td>₱${s.price.toFixed(2)}</td>
+            <td class="action-btns">
+                <button class="btn-edit" onclick="editService(${i})">Edit</button>
+                <button class="btn-delete" onclick="deleteService(${i})">Delete</button>
+            </td>
+        </tr>`;
+    });
+}
+function filterServices(){
+    let q = document.getElementById('serviceSearch').value.toLowerCase();
+    let rows = document.querySelectorAll('#serviceListBody tr');
+    rows.forEach(row=>{
+        let text = row.innerText.toLowerCase();
+        row.style.display = text.includes(q) ? '' : 'none';
+    });
+}
+function editService(i){
+    document.getElementById('serviceFormTitle').innerText = 'Edit Service';
+    document.getElementById('editServiceIndex').value = i;
+    document.getElementById('serviceName').value = serviceList[i].name;
+    document.getElementById('serviceDesc').value = serviceList[i].desc;
+    document.getElementById('servicePrice').value = serviceList[i].price;
+    showScreen('addServiceForm');
+}
+function saveService(){
+    let name = document.getElementById('serviceName').value.trim();
+    let desc = document.getElementById('serviceDesc').value.trim();
+    let price = parseFloat(document.getElementById('servicePrice').value) || 0;
+    if(!name){ alert('Enter service name.'); return; }
+    let idx = document.getElementById('editServiceIndex').value;
+    if(idx===''){
+        serviceList.push({name:name, desc:desc, price:price});
+    }else{
+        serviceList[idx] = {name:name, desc:desc, price:price};
+    }
+    renderServices();
+    alert('Service saved.');
+    showScreen('services');
+}
+function deleteService(i){
+    if(confirm('Delete this service?')){
+        serviceList.splice(i,1);
+        renderServices();
+    }
+}
+
+// --- REPORTS FUNCTIONS ---
+function showReportType(type){
+    document.getElementById('reportOutput').classList.remove('hidden');
+    document.getElementById('reportTitle').innerText = 'Generating...';
+    let content = '';
+    if(type==='daily'){
+        document.getElementById('reportTitle').innerText = 'Daily Transactions';
+        content = `<p>Total Records: ${records.length}</p><p>Total Services: ${records.length}</p>`;
+    }else if(type==='monthly'){
+        document.getElementById('reportTitle').innerText = 'Monthly Services Summary';
+        content = `<p>Checkup: ${records.filter(r=>r.service==='Checkup').length}</p>
+        <p>Vaccine: ${records.filter(r=>r.service==='Vaccine').length}</p>`;
+    }else if(type==='history'){
+        document.getElementById('reportTitle').innerText = 'Appointment History';
+        content = `<p>Latest record: ${records[records.length-1].pet} - ${records[records.length-1].date}</p>`;
+    }else if(type==='revenue'){
+        document.getElementById('reportTitle').innerText = 'Estimated Revenue Report';
+        content = `<p>Total Estimated Income: ₱${records.length * 350}.00</p>`;
+    }
+    document.getElementById('reportContent').innerHTML = content;
+}
+function generateReport(){
+    alert('Report generated based on date range selected.');
+    showReportType('daily');
+}
+
+// --- OTHER FUNCTIONS ---
+function filterPetRecords(){}
+function filterAppointments(){}
+function saveRecord(){
+    if(!document.getElementById('addOwner').value.trim() || !document.getElementById('addPetName').value.trim()){ alert('Please fill required fields.'); return; }
+    records.push({
+        owner: document.getElementById('addOwner').value,
+        pet: document.getElementById('addPetName').value,
+        type: document.getElementById('addType').value,
+        service: document.getElementById('addServiceSelect').value,
+        date: document.getElementById('addDate').value || 'Not specified',
+        status: 'Pending'
+    });
+    refreshTable(); alert('Record saved successfully.'); showScreen('dashboard');
+}
+function clearAddForm(){ document.querySelectorAll('#addRecord input, #addRecord select, #addRecord textarea').forEach(i=>i.value=''); }
+function editRecord(idx){ document.getElementById('editIndex').value=idx; let r=records[idx]; document.getElementById('editPetName').value=r.pet; document.getElementById('currentStatus').value=r.status; document.getElementById('newStatus').value=r.status; document.getElementById('editDate').value=r.date; showScreen('updateRecord'); }
+function applyUpdate(){ let idx=document.getElementById('editIndex').value; records[idx].status=document.getElementById('newStatus').value; records[idx].date=document.getElementById('editDate').value||records[idx].date; refreshTable(); alert('Record updated.'); showScreen('dashboard'); }
+function viewRecord(idx){ let r=records[idx]; document.getElementById('resultBox').innerHTML=`<strong>Owner:</strong> ${r.owner}<br><strong>Pet Name:</strong> ${r.pet}<br><strong>Type:</strong> ${r.type}<br><strong>Service:</strong> ${r.service}<br><strong>Date:</strong> ${r.date}<br><strong>Status:</strong> ${r.status}`; showScreen('searchResult'); }
+function searchRecord(){ let q=(document.getElementById('searchInput').value||document.getElementById('resultSearch').value).toLowerCase().trim(); if(!q){ alert('Enter something to search.'); return; } let f=records.find(r=>r.owner.toLowerCase().includes(q)||r.pet.toLowerCase().includes(q)); f?viewRecord(records.indexOf(f)):alert('No matching record found.'); }
+function refreshTable(){ let tbody=document.querySelector('#recordsTable tbody'); tbody.innerHTML=''; records.forEach((r,i)=>tbody.innerHTML+=`<tr><td>${r.owner}</td><td>${r.pet}</td><td>${r.type}</td><td>${r.service}</td><td>${r.date}</td><td>${r.status}</td><td class="action-btns"><button class="btn-view" onclick="viewRecord(${i})">View</button><button class="btn-edit" onclick="editRecord(${i})">Edit</button></td></tr>`); }
+</script>
+
+</body>
+</html>
